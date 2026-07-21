@@ -32,7 +32,7 @@ This project provisions and deploys a containerized Remix Weather Application us
 
 ## GitHub Actions Workflows
 
-### 1. `terraform-static-analysis.yml` — Static Code Analysis
+### 1. `tf-static-analysis.yml` — Static Code Analysis
 **Trigger:** Push to any branch
 
 Runs the following checks against all Terraform code:
@@ -42,7 +42,7 @@ Runs the following checks against all Terraform code:
 
 ---
 
-### 2. `terraform-plan.yml` — Lint & Plan
+### 2. `tf-plan.yml` — Lint & Plan
 **Trigger:** Pull request to `main`
 
 - `tflint` — lints Terraform files for best practices and provider-specific rules
@@ -50,15 +50,15 @@ Runs the following checks against all Terraform code:
 
 ---
 
-### 3. `terraform-apply.yml` — Apply Infrastructure
+### 3. `tf-apply.yml` — Apply Infrastructure
 **Trigger:** Push to `main` (i.e., merged pull request)
 
 - Runs `terraform apply -auto-approve` to provision or update Azure infrastructure
 
 ---
 
-### 4. `docker-build-push.yml` — Build & Push Docker Image
-**Trigger:** Pull request to `main`, only when application code changes (`app/**`)
+### 4. `docker-build.yml` — Build & Push Docker Image
+**Trigger:** Pull request to `main`, only when application code changes (`weather-app/**`)
 
 - Builds the Remix Weather App Docker image
 - Pushes the image to Azure Container Registry (ACR)
@@ -66,8 +66,8 @@ Runs the following checks against all Terraform code:
 
 ---
 
-### 5. `deploy.yml` — Deploy to AKS
-**Trigger:** Application code changes only (`app/**`)
+### 5. `deploy-app.yml` — Deploy to AKS
+**Trigger:** Application code changes only (`weather-app/**`)
 - **Test environment** → on pull request to `main`
 - **Production environment** → on push to `main` (merged PR)
 
@@ -112,7 +112,7 @@ Remote state is stored in an Azure Storage Account. Ensure the backend config in
 
 ## Workflow Screenshots
 
-[Actions workflows]<img width="1920" height="939" alt="Screenshot 2026-04-22 at 10 23 29 AM" src="https://github.com/user-attachments/assets/dc98a47e-a93d-43f9-a50f-c5b3c540b6cf" />
+[Actions workflows]<img width="1920" height="939" alt="Screenshot 2026-04-22 at 10 23 29 AM" src="https://github.com/user-attachments/assets/dc98a47e-a93d-43f9-a50f-c5b3c540b6cf" />
 
 [AKS LoadBalancer External IP]<img width="944" height="371" alt="image" src="https://github.com/user-attachments/assets/df867271-c2c4-409a-aa70-8b866e2b6204" />
 
@@ -144,14 +144,15 @@ az group delete --name <your-resource-group> --yes --no-wait
 .
 ├── .github/
 │   └── workflows/
-│       ├── terraform-static-analysis.yml
-│       ├── terraform-plan.yml
-│       ├── terraform-apply.yml
-│       ├── docker-build-push.yml
-│       └── deploy.yml
-├── app/                  # Remix Weather Application source
+│       ├── tf-static-analysis.yml
+│       ├── tf-plan.yml
+│       ├── tf-apply.yml
+│       ├── docker-build.yml
+│       └── deploy-app.yml
+├── weather-app/          # Remix Weather App source (includes k8s/ manifests)
+│   └── k8s/              # Kubernetes manifests (test + prod)
 ├── terraform/            # Terraform infrastructure code
-├── k8s/                  # Kubernetes manifests (test + prod)
+├── .gitignore
 └── README.md
 ```
 
